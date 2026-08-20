@@ -75,3 +75,12 @@ Mimari olarak uygulama bağımsız iki ana katmandan oluşur:
 
 <img width="1834" height="906" alt="Ekran görüntüsü 2026-08-20 165753" src="https://github.com/user-attachments/assets/a319c6ee-1292-4c4a-a4b7-ca7a1db55a5d" />
 
+<img width="1856" height="889" alt="Ekran görüntüsü 2026-08-20 165801" src="https://github.com/user-attachments/assets/849f6ceb-3e18-4092-968f-083b0cd9b596" />
+
+<img width="1870" height="901" alt="Ekran görüntüsü 2026-08-20 170521" src="https://github.com/user-attachments/assets/9cad23bd-893f-4e9c-bce2-e78da3859a9d" />
+
+<img width="1870" height="903" alt="Ekran görüntüsü 2026-08-20 170548" src="https://github.com/user-attachments/assets/7aabc4d1-61a8-4b46-89a7-c393cb45e1a1" />
+
+<img width="1892" height="910" alt="Ekran görüntüsü 2026-08-20 170601" src="https://github.com/user-attachments/assets/acc7d998-b9a0-4372-b8c6-1df1daba36da" />
+
+<img width="1849" height="904" alt="Ekran görüntüsü 2026-08-20 170631" src="https://github.com/user-attachments/assets/765ad17a-56a9-4a4a-98e5-0fae2d55822f" />
