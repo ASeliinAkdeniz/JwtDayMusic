@@ -1,0 +1,140 @@
+<style>
+    #globalPlayer.gp-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1050;
+        padding: 0.6rem 1.25rem;
+        background: rgba(16,19,26,0.85);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-top: 1px solid rgba(0,227,253,0.35);
+        box-shadow: 0 -4px 24px rgba(255,71,156,0.22), 0 -1px 0 rgba(255,71,156,0.4);
+        font-family: 'Hanken Grotesk', sans-serif;
+    }
+
+    .gp-inner {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .gp-meta {
+        min-width: 150px;
+        max-width: 240px;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .gp-thumb {
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #ff479c, #a476ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: #fff;
+        box-shadow: 0 0 12px rgba(255,71,156,0.5);
+    }
+
+    .gp-title {
+        font-weight: 700;
+        color: #e1e2eb;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .gp-artist {
+        font-size: 0.75rem;
+        color: #bdf4ff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .gp-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .gp-btn {
+        background: transparent;
+        border: none;
+        color: #e2bdc7;
+        cursor: pointer;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+        .gp-btn:hover {
+            color: #00e3fd;
+            background: rgba(0,227,253,0.12);
+        }
+
+    .gp-btn-main {
+        width: 46px;
+        height: 46px;
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, #ff479c, #a476ff);
+        color: #fff;
+        box-shadow: 0 0 14px rgba(255,71,156,0.6);
+    }
+
+        .gp-btn-main:hover {
+            color: #fff;
+            box-shadow: 0 0 22px rgba(255,71,156,0.9);
+            transform: scale(1.05);
+        }
+
+    #globalAudio {
+        flex: 1;
+        height: 38px;
+        accent-color: #ff479c;
+        filter: hue-rotate(290deg) saturate(1.3);
+    }
+
+    @@media (max-width: 640px) {
+        .gp-meta {
+            min-width: 90px;
+            max-width: 120px;
+        }
+
+        #globalAudio {
+            display: none;
+        }
+    }
+</style>
+
+<div id="globalPlayer" class="gp-bar" style="display:none;">
+    <div class="gp-inner">
+        <div class="gp-meta">
+            <div class="gp-thumb">♪</div>
+            <div style="min-width:0;">
+                <div id="gp-title" class="gp-title">—</div>
+                <div id="gp-artist" class="gp-artist"></div>
+            </div>
+        </div>
+        <div class="gp-controls">
+            <button class="gp-btn" onclick="player.prev()" title="Önceki">⏮</button>
+            <button class="gp-btn gp-btn-main" id="btn-playpause" onclick="player.togglePlayPause()" title="Oynat/Duraklat">⏸</button>
+            <button class="gp-btn" onclick="player.next()" title="Sonraki">⏭</button>
+            <button class="gp-btn" id="btn-shuffle" onclick="player.toggleShuffle()" title="Karıştır" style="opacity:0.5;">🔀</button>
+            <button class="gp-btn" id="btn-repeat" onclick="player.toggleRepeat()" title="Tekrarla" style="opacity:0.5;">🔁</button>
+        </div>
+        <audio id="globalAudio" controls></audio>
+    </div>
+</div>

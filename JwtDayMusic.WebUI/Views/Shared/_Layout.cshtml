@@ -1,0 +1,103 @@
+@{
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string NavClass(string controller) => controller.Equals(currentController, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - JwtDayMusic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/soundwave.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/JwtDayMusic.WebUI.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="sw-header">
+        <nav class="sw-navbar">
+            <a class="sw-logo" asp-area="" asp-controller="Song" asp-action="Index">
+                <span class="sw-logo-icon material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">album</span>
+                <span class="sw-logo-text">JwtDayMusic</span>
+            </a>
+
+            <button type="button" class="sw-navbar-toggle" id="swNavToggle" aria-label="Menüyü aç/kapat">☰</button>
+
+            <ul class="sw-nav-links" id="swNavLinks">
+                <li><a class="@NavClass("Song")" asp-area="" asp-controller="Song" asp-action="Index">Müzikler</a></li>
+                <li><a class="@NavClass("Artist")" asp-area="" asp-controller="Artist" asp-action="ArtistList">Sanatçılar</a></li>
+                <li><a class="@NavClass("Genre")" asp-area="" asp-controller="Genre" asp-action="Index">Türler</a></li>
+                <li><a class="@NavClass("Playlist")" asp-area="" asp-controller="Playlist" asp-action="Index">Playlistlerim</a></li>
+                <li><a class="@NavClass("Like")" asp-area="" asp-controller="Like" asp-action="Index">Favorilerim</a></li>
+                <li><a class="@NavClass("Membership")" asp-area="" asp-controller="Membership" asp-action="Index">Paketler</a></li>
+            </ul>
+
+            <form class="sw-search" asp-controller="Search" asp-action="Index" method="get">
+                <input type="search" name="q" placeholder="Şarkı, sanatçı, tür ara..." />
+                <button type="submit">Ara</button>
+            </form>
+
+            @if (Context.Session.GetString("JwtToken") != null)
+            {
+                <div class="sw-auth">
+                    <a class="@NavClass("Profile")" asp-area="" asp-controller="Profile" asp-action="Index">Profilim</a>
+                    <a asp-area="" asp-controller="Login" asp-action="LogOut">Çıkış</a>
+                </div>
+            }
+            else
+            {
+                <div class="sw-auth">
+                    <a asp-area="" asp-controller="Login" asp-action="SignIn">Giriş</a>
+                    <a class="sw-cta" asp-area="" asp-controller="Register" asp-action="SignUp">Üye Ol</a>
+                </div>
+            }
+        </nav>
+    </header>
+    <div class="container sw-page-wrap">
+        <main role="main" class="pb-3">
+            @RenderBody()
+            <partial name="_Player" />
+        </main>
+    </div>
+
+    <!-- Playlist'e ekleme modalı (playlist-add.js tarafından yönetilir) -->
+    <div class="pladd-overlay" id="pladdOverlay">
+        <div class="pladd-modal" role="dialog" aria-modal="true" aria-labelledby="pladdTitle">
+            <div class="pladd-header">
+                <h3 class="pladd-title" id="pladdTitle">
+                    <span class="material-symbols-outlined">playlist_add</span>
+                    Playlist'e Ekle
+                </h3>
+                <button type="button" class="pladd-close" id="pladdClose" aria-label="Kapat">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="pladd-body" id="pladdBody">
+                <p class="pladd-status">Playlistler yükleniyor...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="sw-footer">
+        <div class="container">
+            &copy; 2026 - JwtDayMusic - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/notify.js" asp-append-version="true"></script>
+    <script src="~/js/playlist-add.js" asp-append-version="true"></script>
+    <script src="~/js/like.js" asp-append-version="true"></script>
+    <script src="~/js/player.js" asp-append-version="true"></script>
+    <script>
+        // Küçük ekranlarda navbar linklerini aç/kapat.
+        document.getElementById('swNavToggle')?.addEventListener('click', function () {
+            document.getElementById('swNavLinks')?.classList.toggle('show');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

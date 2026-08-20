@@ -1,0 +1,36 @@
+@model List<JwtDayMusic.WebUI.Dtos.ResultPlaylistDto>
+
+@{
+    ViewData["Title"] = "Playlistlerim";
+}
+
+<h1 class="fv-title">Playlistlerim</h1>
+<p class="fv-subtitle mb-4">Kendi frekans koleksiyonlarını oluştur ve düzenle.</p>
+
+<form asp-action="Create" method="post" class="pl-create">
+    <input type="text" name="name" placeholder="Yeni playlist adı" required />
+    <button type="submit">
+        <span class="material-symbols-outlined" style="vertical-align:middle; font-size:18px;">add</span>
+        Oluştur
+    </button>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henüz playlist'in yok. Yukarıdan bir tane oluştur.</div>
+}
+else
+{
+    <div class="pl-grid">
+        @foreach (var pl in Model)
+        {
+            <a asp-action="Detail" asp-route-id="@pl.PlaylistId" class="pl-card">
+                <div class="pl-card-icon">
+                    <span class="material-symbols-outlined">queue_music</span>
+                </div>
+                <div class="pl-card-name">@pl.Name</div>
+                <div class="pl-card-count">@pl.SongCount şarkı</div>
+            </a>
+        }
+    </div>
+}

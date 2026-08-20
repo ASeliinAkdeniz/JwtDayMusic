@@ -1,0 +1,148 @@
+@model JwtDayMusic.WebUI.Dtos.ProfileDto
+
+@{
+    ViewData["Title"] = "Profilim";
+
+    string TierRibbonClass(string t) => t switch
+    {
+        "Gold" => "pr-tier-ribbon--gold",
+        "Premium" => "pr-tier-ribbon--premium",
+        "Elit" => "pr-tier-ribbon--elit",
+        _ => "pr-tier-ribbon--basic"
+    };
+
+    // Baş harf avatarı için (resim yoksa)
+    string initials =
+        ((Model.Name?.Length > 0 ? Model.Name.Substring(0, 1) : "") +
+         (Model.Surname?.Length > 0 ? Model.Surname.Substring(0, 1) : "")).ToUpper();
+    if (string.IsNullOrEmpty(initials)) initials = "?";
+}
+
+<section class="pr-hero">
+    <div class="pr-avatar-wrap">
+        <div class="pr-avatar">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.Name" />
+            }
+            else
+            {
+                <div class="pr-avatar-fallback">@initials</div>
+            }
+        </div>
+        <span class="pr-tier-ribbon @TierRibbonClass(Model.Tier)">@Model.Tier</span>
+    </div>
+
+    <div>
+        <h1 class="pr-name">@Model.Name @Model.Surname</h1>
+        <p class="pr-username">@@@Model.UserName</p>
+        <p class="pr-email">
+            <span class="material-symbols-outlined">mail</span>
+            @Model.Email
+        </p>
+
+        <div class="pr-actions">
+            <a asp-action="Edit" class="pr-btn-edit">
+                <span class="material-symbols-outlined">edit</span>
+                Profili Düzenle
+            </a>
+            <button type="button" class="pr-btn-share" onclick="shareProfile()">
+                <span class="material-symbols-outlined">share</span>
+                Paylaş
+            </button>
+        </div>
+    </div>
+</section>
+
+<div class="pr-stats">
+    <div class="pr-stat-card pr-stat-card--secondary">
+        <div class="pr-stat-icon"><span class="material-symbols-outlined">queue_music</span></div>
+        <div>
+            <div class="pr-stat-label">Playlist</div>
+            <div class="pr-stat-value">@Model.PlaylistCount</div>
+        </div>
+    </div>
+    <div class="pr-stat-card pr-stat-card--primary">
+        <div class="pr-stat-icon"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span></div>
+        <div>
+            <div class="pr-stat-label">Beğeni</div>
+            <div class="pr-stat-value">@Model.LikedCount</div>
+        </div>
+    </div>
+    <div class="pr-stat-card pr-stat-card--tertiary">
+        <div class="pr-stat-icon"><span class="material-symbols-outlined">headphones</span></div>
+        <div>
+            <div class="pr-stat-label">Dinleme</div>
+            <div class="pr-stat-value">@Model.ListenCount</div>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="mg-hero-head">
+        <h2 class="mg-heading mg-heading--secondary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+            Senin İçin Öneriler
+        </h2>
+        <div class="mg-hero-nav">
+            <button type="button" class="mg-hero-nav-btn" id="recPrevBtn" aria-label="Önceki">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button type="button" class="mg-hero-nav-btn" id="recNextBtn" aria-label="Sonraki">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+    </div>
+    <div id="recommendations" class="mb-4">
+        <p class="text-muted">Öneriler yükleniyor...</p>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        window.addEventListener('DOMContentLoaded', async function () {
+            try {
+                const res = await fetch('/Song/Recommendations');
+                const html = await res.text();
+                document.getElementById('recommendations').innerHTML = html;
+                initHeroScrollNav('recommendations', 'recPrevBtn', 'recNextBtn');
+            } catch (e) {
+                document.getElementById('recommendations').innerHTML =
+                    '<p class="text-muted">Öneriler yüklenemedi.</p>';
+            }
+        });
+
+        // Yatay kaydırmalı öneri şeridini ileri/geri oklarla kaydırır;
+        // baştaysa geri, sondaysa ileri okunu pasifleştirir.
+        function initHeroScrollNav(containerId, prevId, nextId) {
+            const strip = document.querySelector('#' + containerId + ' .mg-hero-strip');
+            const prevBtn = document.getElementById(prevId);
+            const nextBtn = document.getElementById(nextId);
+            if (!strip || !prevBtn || !nextBtn) {
+                if (prevBtn) prevBtn.style.display = 'none';
+                if (nextBtn) nextBtn.style.display = 'none';
+                return;
+            }
+            function updateNavState() {
+                prevBtn.disabled = strip.scrollLeft <= 4;
+                nextBtn.disabled = strip.scrollLeft >= strip.scrollWidth - strip.clientWidth - 4;
+            }
+            strip.addEventListener('scroll', updateNavState);
+            window.addEventListener('resize', updateNavState);
+            prevBtn.addEventListener('click', () => strip.scrollBy({ left: -360, behavior: 'smooth' }));
+            nextBtn.addEventListener('click', () => strip.scrollBy({ left: 360, behavior: 'smooth' }));
+            updateNavState();
+        }
+
+        function shareProfile() {
+            const url = window.location.href;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url)
+                    .then(() => notify('Profil bağlantısı kopyalandı.', 'success', 2000))
+                    .catch(() => notify('Bağlantı kopyalanamadı.', 'error'));
+            } else {
+                notify(url, 'info');
+            }
+        }
+    </script>
+}

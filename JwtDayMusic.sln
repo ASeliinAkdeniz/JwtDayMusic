@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtDayMusic.WebApi", "JwtDayMusic.WebApi\JwtDayMusic.WebApi.csproj", "{8A5FEDD9-E444-4C06-B7DB-F6901AE20AFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtDayMusic.WebUI", "JwtDayMusic.WebUI\JwtDayMusic.WebUI.csproj", "{101A881C-97A9-4D16-99E8-D8B13B6BE97D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A5FEDD9-E444-4C06-B7DB-F6901AE20AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A5FEDD9-E444-4C06-B7DB-F6901AE20AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A5FEDD9-E444-4C06-B7DB-F6901AE20AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A5FEDD9-E444-4C06-B7DB-F6901AE20AFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{101A881C-97A9-4D16-99E8-D8B13B6BE97D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{101A881C-97A9-4D16-99E8-D8B13B6BE97D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{101A881C-97A9-4D16-99E8-D8B13B6BE97D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{101A881C-97A9-4D16-99E8-D8B13B6BE97D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

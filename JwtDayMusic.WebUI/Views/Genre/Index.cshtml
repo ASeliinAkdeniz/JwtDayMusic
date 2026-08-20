@@ -1,0 +1,40 @@
+@model List<JwtDayMusic.WebUI.Dtos.ResultGenreDto>
+
+@{
+    ViewData["Title"] = "Türler";
+}
+
+<div class="gn-header">
+    <h2 class="gn-title">Boyutları Keşfet</h2>
+    <p class="gn-subtitle">Frekans ızgarasına dal. Bir tür seç, o dünyaya geçiş yap.</p>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henüz tür bulunmuyor.</div>
+}
+else
+{
+    <div class="gn-grid">
+        @foreach (var genre in Model)
+        {
+            bool hasImage = !string.IsNullOrWhiteSpace(genre.ImageUrl);
+            <a asp-controller="Genre" asp-action="Detail" asp-route-id="@genre.GenreId"
+               class="gn-card @(hasImage ? "gn-card--has-image" : "")"
+               style="@(hasImage ? $"background-image:url('{genre.ImageUrl}');" : "")">
+                <div class="gn-card-overlay"></div>
+                @if (!hasImage)
+                {
+                    <span class="material-symbols-outlined gn-card-icon">graphic_eq</span>
+                }
+                <div class="gn-card-content">
+                    <h3 class="gn-card-name">@genre.Name</h3>
+                    <div class="gn-card-meta">
+                        <span class="gn-card-tag">#@genre.Name.ToUpperInvariant()</span>
+                        <span class="gn-card-count">@genre.SongCount şarkı</span>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+}

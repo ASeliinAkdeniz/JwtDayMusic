@@ -1,0 +1,94 @@
+@model List<JwtDayMusic.WebUI.Dtos.ResultSongDto>
+
+@{
+    ViewData["Title"] = "Arama";
+    string query = ViewBag.Query as string ?? "";
+}
+
+<div class="sw-search-page">
+    @if (string.IsNullOrWhiteSpace(query))
+    {
+        <div class="alert alert-info">Aramak için üstteki kutuya bir şeyler yaz.</div>
+    }
+    else
+    {
+        <div class="sw-search-header">
+            <h2 class="sw-search-title">
+                @(Model.Any()
+                    ? $"“{query}” için {Model.Count} sonuç"
+                    : $"“{query}” için sonuç bulunamadı")
+            </h2>
+            <p class="sw-search-subtitle">Frekansınıza uyan parçalar, sanatçılar ve çalma listeleri.</p>
+        </div>
+
+        <div class="sw-search-tabs" role="tablist">
+            <button type="button" class="sw-search-tab active" data-filter="all">Tümü</button>
+            <button type="button" class="sw-search-tab" data-filter="tracks">Parçalar</button>
+            <button type="button" class="sw-search-tab" data-filter="artists" disabled title="Yakında">Sanatçılar</button>
+            <button type="button" class="sw-search-tab" data-filter="playlists" disabled title="Yakında">Çalma Listeleri</button>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-warning">
+                "<strong>@query</strong>" için sonuç bulunamadı.
+            </div>
+        }
+        else
+        {
+            <div class="sw-song-grid">
+                @foreach (var song in Model)
+                {
+                    <div class="sw-song-card">
+                        <div class="sw-cover-wrap">
+                            <img src="@song.CoverImageUrl" alt="@song.Title" />
+                            @if (song.Tier >= 3)
+                            {
+                                <span class="sw-pro-badge">PRO</span>
+                            }
+                            <div class="sw-play-overlay">
+                                <button class="sw-play-circle queue-item"
+                                        data-song-id="@song.SongId"
+                                        data-song-title="@song.Title"
+                                        data-song-artist="@song.ArtistName"
+                                        onclick="player.playFrom(@song.SongId)"
+                                        title="Oynat">▶</button>
+                            </div>
+                        </div>
+                        <div class="sw-song-body">
+                            <div class="sw-song-row">
+                                <div class="sw-song-title">@song.Title</div>
+                                <div class="sw-song-actions">
+                                    <button class="sw-icon-btn like-btn text-muted" data-song-id="@song.SongId"
+                                            onclick="toggleLike(@song.SongId, this)" title="Beğen">♡</button>
+                                    <button class="sw-icon-btn" onclick="addToPlaylist(@song.SongId)" title="Playlist'e ekle">＋</button>
+                                </div>
+                            </div>
+                            <div class="sw-song-meta">@song.ArtistName · @song.GenreName</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="sw-load-more-wrap">
+                <button type="button" class="sw-load-more-btn" disabled title="Şu an için tüm sonuçlar listeleniyor">
+                    Daha fazla frekans yükle
+                </button>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Sekmeler şimdilik görsel: arka uç yalnızca şarkı sonucu döndürüyor,
+        // sanatçı/çalma listesi araması eklendiğinde burada gerçek filtreleme yapılabilir.
+        document.querySelectorAll('.sw-search-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                if (tab.disabled) return;
+                document.querySelectorAll('.sw-search-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+    </script>
+}

@@ -1,0 +1,117 @@
+@{
+    ViewData["Title"] = "Paketler";
+    string current = ViewBag.CurrentTier as string ?? "Basic";
+}
+
+<div class="pk-floor"></div>
+
+<div class="pk-header">
+    <h2 class="pk-title">Kademeni Yükselt</h2>
+    <p class="pk-subtitle">Erişim seviyeni seç. Üst kademeler daha geniş bir şarkı kütüphanesine ve öncelikli önerilere açılır.</p>
+</div>
+
+<div class="pk-current-wrap">
+    <span class="pk-current">
+        <span class="material-symbols-outlined" style="font-size:16px;">bolt</span>
+        Mevcut paketin: <strong id="currentTier">@current</strong>
+    </span>
+</div>
+
+<div class="pk-grid">
+    <!-- Basic -->
+    <div class="pk-card">
+        <span class="material-symbols-outlined pk-card-icon">audiotrack</span>
+        @if (current == "Basic")
+        {
+            <span class="pk-active-ribbon">Aktif Paketin</span>
+        }
+        <h3 class="pk-card-name">Basic</h3>
+        <div class="pk-card-price"><span class="amount">₺0</span> <span class="period">/ay</span></div>
+        <ul class="pk-card-features">
+            <li><span class="material-symbols-outlined" style="color:var(--mg-secondary);">check</span> Basic kademedeki şarkılara erişim</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-secondary);">check</span> Sınırsız çalma listesi oluştur</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-secondary);">check</span> Şarkıları favorilere ekle</li>
+        </ul>
+        <button class="pk-btn pk-btn-ghost" disabled>Varsayılan Paket</button>
+    </div>
+
+    <!-- Gold -->
+    <div class="pk-card pk-card--gold">
+        <span class="material-symbols-outlined pk-card-icon">headphones</span>
+        @if (current == "Gold")
+        {
+            <span class="pk-active-ribbon">Aktif Paketin</span>
+        }
+        <h3 class="pk-card-name">Gold</h3>
+        <div class="pk-card-price"><span class="amount">₺49,90</span> <span class="period">/ay</span></div>
+        <ul class="pk-card-features">
+            <li><span class="material-symbols-outlined" style="color:var(--mg-gold);">check</span> Gold ve altı tüm şarkılara erişim</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-gold);">check</span> Basic'teki her şey</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-gold);">check</span> Kişiselleştirilmiş öneriler</li>
+        </ul>
+        <button class="pk-btn pk-btn-outline-gold" onclick="buyPackage('Gold')" @(current == "Gold" ? "disabled" : "")>
+            @(current == "Gold" ? "Aktif Paketin" : "Gold'a Geç")
+        </button>
+    </div>
+
+    <!-- Premium -->
+    <div class="pk-card pk-card--premium">
+        <span class="material-symbols-outlined pk-card-icon">album</span>
+        @if (current == "Premium")
+        {
+            <span class="pk-active-ribbon">Aktif Paketin</span>
+        }
+        <h3 class="pk-card-name">Premium</h3>
+        <div class="pk-card-price"><span class="amount">₺89,90</span> <span class="period">/ay</span></div>
+        <ul class="pk-card-features">
+            <li><span class="material-symbols-outlined" style="color:var(--mg-primary);">check</span> Premium ve altı tüm şarkılara erişim</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-primary);">check</span> Gold'daki her şey</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-primary);">check</span> Gelişmiş öneri motoru</li>
+        </ul>
+        <button class="pk-btn pk-btn-solid-primary" onclick="buyPackage('Premium')" @(current == "Premium" ? "disabled" : "")>
+            @(current == "Premium" ? "Aktif Paketin" : "Premium'a Geç")
+        </button>
+    </div>
+
+    <!-- Elit -->
+    <div class="pk-card pk-card--elit">
+        <span class="material-symbols-outlined pk-card-icon">diamond</span>
+        @if (current == "Elit")
+        {
+            <span class="pk-active-ribbon">Aktif Paketin</span>
+        }
+        <h3 class="pk-card-name">Elit</h3>
+        <div class="pk-card-price"><span class="amount">₺149,90</span> <span class="period">/ay</span></div>
+        <ul class="pk-card-features">
+            <li><span class="material-symbols-outlined" style="color:var(--mg-tertiary);">check</span> Sistemdeki tüm şarkılara sınırsız erişim</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-tertiary);">check</span> Premium'daki her şey</li>
+            <li><span class="material-symbols-outlined" style="color:var(--mg-tertiary);">check</span> Yeni eklenen parçalara ilk erişim</li>
+        </ul>
+        <button class="pk-btn pk-btn-solid-elit" onclick="buyPackage('Elit')" @(current == "Elit" ? "disabled" : "")>
+            @(current == "Elit" ? "Aktif Paketin" : "Elit'e Geç")
+        </button>
+    </div>
+</div>
+
+<p class="pk-footnote">Bu bir demo sistemdir — gerçek bir ödeme alınmaz, paket değişikliği anında uygulanır.</p>
+
+@section Scripts {
+    <script>
+        async function buyPackage(tier) {
+            try {
+                const res = await fetch('/Membership/Buy?tier=' + tier, { method: 'POST' });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('currentTier').innerText = data.tier;
+                    notify(data.message + ' Artık müzik sayfasında bu kademedeki şarkıları çalabilirsiniz.', 'success');
+                } else {
+                    const data = await res.json();
+                    notify(data.message || 'Satın alma başarısız.', 'error');
+                }
+            } catch (e) {
+                notify('İstek gönderilemedi: ' + e, 'error');
+            }
+        }
+    </script>
+}

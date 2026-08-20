@@ -1,0 +1,506 @@
+@model JwtDayMusic.WebUI.Dtos.RegisterDto
+@{
+    Layout = null;
+    ViewData["Title"] = "Kayıt Ol – JwtDayMusic";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg: #0b0e14;
+            --surface-container: #1d2026;
+            --surface-container-high: #272a31;
+            --primary: #ffb0cb;
+            --primary-container: #ff479c;
+            --on-primary: #640036;
+            --secondary: #bdf4ff;
+            --secondary-container: #00e3fd;
+            --tertiary: #d2bbff;
+            --tertiary-container: #a476ff;
+            --on-surface: #e1e2eb;
+            --on-surface-variant: #e2bdc7;
+            --outline-variant: #5a3f48;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            min-height: 100vh;
+            font-family: 'Hanken Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--on-surface);
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1rem;
+            position: relative;
+        }
+
+        /* ── ARKA PLAN: parıltı + retro güneş + senkron ızgara ── */
+        .bg-glow {
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse at top, rgba(54,0,125,0.45) 0%, rgba(11,14,20,1) 75%);
+            z-index: 0; pointer-events: none;
+        }
+
+        .bg-sun {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 460px;
+            height: 460px;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, var(--primary) 0%, var(--primary-container) 55%, var(--secondary-container) 100%);
+            box-shadow: 0 0 140px rgba(255, 71, 156, 0.6);
+            opacity: 0.6;
+            mix-blend-mode: screen;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-grid-wrap { position: fixed; left: 0; right: 0; bottom: 0; height: 55%; overflow: hidden; z-index: 0; pointer-events: none; }
+        .bg-grid {
+            position: absolute; inset: -20% -50% 0 -50%;
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(0,227,253,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,71,156,0.15) 1px, transparent 1px);
+            transform: perspective(500px) rotateX(60deg) scale(2);
+            transform-origin: bottom center;
+            animation: gridMove 10s linear infinite;
+        }
+        @@keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0) scale(2); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(40px) scale(2); }
+        }
+        .bg-grid-fade { position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(to bottom, var(--bg), transparent); }
+
+        /* ── İÇERİK ── */
+        .auth-main { position: relative; z-index: 10; width: 100%; max-width: 460px; }
+
+        .auth-logo { text-align: center; margin-bottom: 2rem; }
+        .auth-logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 2.1rem;
+            letter-spacing: -0.02em;
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(255,176,203,0.8);
+        }
+        .auth-tagline {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--secondary);
+            opacity: 0.8;
+            margin-top: 0.4rem;
+        }
+
+        .auth-card {
+            background: rgba(21,25,33,0.45);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(0,227,253,0.2);
+            box-shadow: inset 0 0 20px rgba(255,71,156,0.05), 0 30px 80px rgba(0,0,0,0.55);
+            border-radius: 20px;
+            padding: clamp(1.75rem, 5vw, 2.25rem);
+        }
+
+        .auth-tabs { display: flex; justify-content: center; margin-bottom: 2rem; }
+        .auth-tabs-inner {
+            display: inline-flex; gap: 0.25rem; padding: 0.25rem;
+            background: rgba(29,32,38,0.6);
+            border: 1px solid rgba(189,244,255,0.12);
+            border-radius: 10px;
+        }
+        .auth-tab {
+            padding: 0.55rem 1.6rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--on-surface-variant);
+            transition: all 0.2s;
+        }
+        .auth-tab:hover { color: var(--secondary); text-decoration: none; }
+        .auth-tab.active { color: var(--primary); background: rgba(255,71,156,0.12); box-shadow: 0 0 10px rgba(255,71,156,0.25); }
+
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+
+        .field-group { margin-bottom: 1.15rem; }
+        .field-label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--secondary);
+            margin-bottom: 0.45rem;
+        }
+        .field-wrap { position: relative; }
+        .field-icon {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--on-surface-variant); opacity: 0.5; font-size: 20px;
+            pointer-events: none; transition: color 0.2s, opacity 0.2s;
+        }
+        .field-wrap:focus-within .field-icon { color: var(--secondary); opacity: 1; }
+        .field-input {
+            width: 100%;
+            background: rgba(39,42,49,0.7);
+            border: 1px solid var(--outline-variant);
+            border-radius: 10px;
+            color: var(--on-surface);
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.88rem;
+            padding: 0.8rem 1rem 0.8rem 2.6rem;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+        }
+        .field-input::placeholder { color: rgba(226,189,199,0.3); }
+        .field-input:focus {
+            border-color: var(--secondary-container);
+            box-shadow: 0 0 10px rgba(0,227,253,0.4), inset 0 0 5px rgba(0,227,253,0.15);
+        }
+        .field-input.has-toggle { padding-right: 2.8rem; }
+
+        .field-group.is-invalid .field-input { border-color: rgba(255,71,156,0.6); }
+        .field-error {
+            display: none;
+            font-size: 0.72rem;
+            color: var(--primary);
+            margin-top: 0.4rem;
+            padding-left: 2px;
+        }
+        .field-group.is-invalid .field-error { display: block; }
+
+        .pw-toggle {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--on-surface-variant);
+            display: flex; cursor: pointer; padding: 4px; border-radius: 6px;
+            transition: color 0.2s; z-index: 2;
+        }
+        .pw-toggle:hover { color: var(--secondary); }
+        .pw-toggle .material-symbols-outlined { font-size: 19px; }
+
+        /* ── ŞİFRE GÜCÜ ── */
+        .pw-strength { margin-top: 0.55rem; }
+        .strength-bar-row { display: flex; gap: 4px; margin-bottom: 4px; }
+        .strength-bar { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,0.08); transition: background 0.3s; }
+        .strength-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--on-surface-variant); }
+
+        /* ── ONAY KUTUSU ── */
+        .terms-row { display: flex; align-items: flex-start; gap: 0.6rem; margin: 0.2rem 0 1.25rem; }
+        .sw-checkbox {
+            width: 18px; height: 18px;
+            border: 1.5px solid var(--outline-variant);
+            border-radius: 5px;
+            background: rgba(39,42,49,0.7);
+            appearance: none; -webkit-appearance: none;
+            cursor: pointer; flex-shrink: 0; margin-top: 2px;
+            transition: all 0.2s; position: relative;
+        }
+        .sw-checkbox:checked { background: linear-gradient(135deg, var(--primary-container), var(--tertiary-container)); border-color: transparent; }
+        .sw-checkbox:checked::after {
+            content: ''; position: absolute; left: 4px; top: 2px; width: 6px; height: 9px;
+            border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(40deg);
+        }
+        .terms-text { font-size: 0.78rem; color: var(--on-surface-variant); line-height: 1.5; }
+
+        .btn-auth {
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-container), var(--tertiary-container));
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255,71,156,0.5);
+            transition: all 0.3s;
+        }
+        .btn-auth:hover { box-shadow: 0 0 25px rgba(255,71,156,0.85); transform: translateY(-2px); }
+        .btn-auth:active { transform: translateY(0); }
+        .btn-auth .material-symbols-outlined { font-size: 18px; }
+
+        .auth-footnote {
+            text-align: center;
+            margin-top: 1.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            color: rgba(226,189,199,0.35);
+        }
+
+        .validation-summary-errors {
+            background: rgba(255,71,156,0.08);
+            border: 1px solid rgba(255,71,156,0.3);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.1rem;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+        .validation-summary-errors ul { margin: 0; padding-left: 1.1rem; }
+        .validation-summary-valid { display: none; }
+        .field-validation-error { font-size: 0.72rem; color: var(--primary); }
+
+        @@media (max-width: 480px) {
+            .field-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+    <div class="bg-sun"></div>
+    <div class="bg-grid-wrap">
+        <div class="bg-grid"></div>
+        <div class="bg-grid-fade"></div>
+    </div>
+
+    <main class="auth-main">
+        <div class="auth-logo">
+            <div class="auth-logo-text">JwtDayMusic</div>
+            <div class="auth-tagline">Ağa Bağlan</div>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <div class="auth-tabs-inner">
+                    <a asp-controller="Login" asp-action="SignIn" class="auth-tab">Giriş</a>
+                    <span class="auth-tab active">Kayıt Ol</span>
+                </div>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <form method="post" id="registerForm" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="field-row">
+                    <div class="field-group" id="grp-name">
+                        <label class="field-label" for="Name">Ad</label>
+                        <div class="field-wrap">
+                            <span class="material-symbols-outlined field-icon">badge</span>
+                            <input asp-for="Name"
+                                   class="field-input"
+                                   type="text"
+                                   name="Name"
+                                   id="Name"
+                                   placeholder="Adın"
+                                   autocomplete="given-name" />
+                        </div>
+                        <span asp-validation-for="Name" class="field-validation-error field-error"></span>
+                    </div>
+                    <div class="field-group" id="grp-surname">
+                        <label class="field-label" for="Surname">Soyad</label>
+                        <div class="field-wrap">
+                            <span class="material-symbols-outlined field-icon">badge</span>
+                            <input asp-for="Surname"
+                                   class="field-input"
+                                   type="text"
+                                   name="Surname"
+                                   id="Surname"
+                                   placeholder="Soyadın"
+                                   autocomplete="family-name" />
+                        </div>
+                        <span asp-validation-for="Surname" class="field-validation-error field-error"></span>
+                    </div>
+                </div>
+
+                <div class="field-group" id="grp-username">
+                    <label class="field-label" for="UserName">Kimlik [Kullanıcı Adı]</label>
+                    <div class="field-wrap">
+                        <span class="material-symbols-outlined field-icon">person</span>
+                        <input asp-for="UserName"
+                               class="field-input"
+                               type="text"
+                               name="UserName"
+                               id="UserName"
+                               placeholder="kullanici_adi"
+                               autocomplete="username" />
+                    </div>
+                    <span asp-validation-for="UserName" class="field-validation-error field-error"></span>
+                </div>
+
+                <div class="field-group" id="grp-email">
+                    <label class="field-label" for="Email">İletişim [E-posta]</label>
+                    <div class="field-wrap">
+                        <span class="material-symbols-outlined field-icon">mail</span>
+                        <input asp-for="Email"
+                               class="field-input"
+                               type="email"
+                               name="Email"
+                               id="Email"
+                               placeholder="sen@grid.net"
+                               autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="field-validation-error field-error"></span>
+                </div>
+
+                <div class="field-group" id="grp-password">
+                    <label class="field-label" for="Password">Erişim Anahtarı [Şifre]</label>
+                    <div class="field-wrap">
+                        <span class="material-symbols-outlined field-icon">lock</span>
+                        <input asp-for="Password"
+                               class="field-input has-toggle"
+                               type="password"
+                               name="Password"
+                               id="Password"
+                               placeholder="Bir şifre oluştur"
+                               autocomplete="new-password"
+                               oninput="checkStrength(this.value)" />
+                        <button type="button" class="pw-toggle" onclick="togglePassword()" title="Göster / Gizle">
+                            <span class="material-symbols-outlined" id="pwEyeIcon">visibility</span>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-validation-error field-error"></span>
+
+                    <div class="pw-strength" id="pwStrength" style="display:none;">
+                        <div class="strength-bar-row">
+                            <div class="strength-bar" id="sb1"></div>
+                            <div class="strength-bar" id="sb2"></div>
+                            <div class="strength-bar" id="sb3"></div>
+                            <div class="strength-bar" id="sb4"></div>
+                        </div>
+                        <span class="strength-label" id="strengthLabel">Zayıf</span>
+                    </div>
+                </div>
+
+                <div class="terms-row">
+                    <input type="checkbox" class="sw-checkbox" id="terms" name="terms" />
+                    <label for="terms" class="terms-text">
+                        JwtDayMusic'in Kullanım Şartları ve Gizlilik Politikası'nı kabul ediyorum.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-auth" id="submitBtn">
+                    <span>Hesabımı Oluştur</span>
+                    <span class="material-symbols-outlined">person_add</span>
+                </button>
+            </form>
+        </div>
+
+        <p class="auth-footnote">JWTDAYMUSIC AĞI // SİSTEM ÇEVRİM İÇİ</p>
+    </main>
+
+    <script>
+        function togglePassword() {
+            const pw = document.getElementById('Password');
+            const icon = document.getElementById('pwEyeIcon');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                pw.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        }
+
+        function checkStrength(val) {
+            const wrap = document.getElementById('pwStrength');
+            const label = document.getElementById('strengthLabel');
+            const bars = [
+                document.getElementById('sb1'),
+                document.getElementById('sb2'),
+                document.getElementById('sb3'),
+                document.getElementById('sb4'),
+            ];
+
+            if (!val) { wrap.style.display = 'none'; return; }
+            wrap.style.display = 'block';
+
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const configs = [
+                { color: '#ff479c', text: 'Zayıf' },
+                { color: '#fb923c', text: 'Orta' },
+                { color: '#facc15', text: 'İyi' },
+                { color: '#06ffa5', text: 'Güçlü' },
+            ];
+
+            bars.forEach((bar, i) => {
+                bar.style.background = i < score ? configs[score - 1].color : 'rgba(255,255,255,0.08)';
+            });
+            label.textContent = configs[score - 1]?.text ?? 'Zayıf';
+            label.style.color = configs[score - 1]?.color ?? '#ff479c';
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            let valid = true;
+
+            const fields = [
+                { id: 'Name', grp: 'grp-name', msg: 'Ad gerekli.' },
+                { id: 'Surname', grp: 'grp-surname', msg: 'Soyad gerekli.' },
+                { id: 'UserName', grp: 'grp-username', msg: 'Kullanıcı adı gerekli.' },
+                { id: 'Email', grp: 'grp-email', msg: 'Geçerli bir e-posta gerekli.' },
+                { id: 'Password', grp: 'grp-password', msg: 'Şifre gerekli.' },
+            ];
+
+            fields.forEach(f => {
+                const el = document.getElementById(f.id);
+                const grp = document.getElementById(f.grp);
+                const err = grp.querySelector('.field-error, .field-validation-error');
+                const isEmpty = !el.value.trim();
+                const isInvalidEmail = f.id === 'Email' && el.value && !/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(el.value);
+
+                if (isEmpty || isInvalidEmail) {
+                    grp.classList.add('is-invalid');
+                    if (err && !err.textContent.trim()) err.textContent = f.msg;
+                    if (err) err.style.display = 'block';
+                    valid = false;
+                } else {
+                    grp.classList.remove('is-invalid');
+                    if (err) err.style.display = 'none';
+                }
+            });
+
+            const terms = document.getElementById('terms');
+            if (!terms.checked) {
+                terms.style.outline = '2px solid rgba(255,71,156,0.7)';
+                valid = false;
+            } else {
+                terms.style.outline = '';
+            }
+
+            if (!valid) e.preventDefault();
+        });
+
+        document.querySelectorAll('.field-input').forEach(input => {
+            input.addEventListener('input', () => {
+                const grp = input.closest('.field-group');
+                if (!grp) return;
+                grp.classList.remove('is-invalid');
+                const err = grp.querySelector('.field-error, .field-validation-error');
+                if (err) err.style.display = 'none';
+            });
+        });
+    </script>
+
+</body>
+</html>

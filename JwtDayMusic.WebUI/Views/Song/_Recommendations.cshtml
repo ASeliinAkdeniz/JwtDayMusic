@@ -1,0 +1,37 @@
+@model List<JwtDayMusic.WebUI.Dtos.ResultSongDto>
+
+@if (Model != null && Model.Any())
+{
+    <div class="mg-hero-strip">
+        @foreach (var song in Model)
+        {
+            <div class="mg-hero-card">
+                <div class="mg-hero-cover">
+                    <img src="@song.CoverImageUrl" alt="@song.Title" />
+                    @if (!string.IsNullOrWhiteSpace(song.GenreName))
+                    {
+                        <span class="mg-hashtag">#@song.GenreName.ToUpperInvariant()</span>
+                    }
+                </div>
+                <div class="mg-hero-body">
+                    <div class="mg-hero-info">
+                        <div class="mg-hero-title">@song.Title</div>
+                        <p class="mg-hero-artist">@song.ArtistName</p>
+                    </div>
+                    <button class="mg-hero-play queue-item"
+                            data-song-id="@song.SongId"
+                            data-song-title="@song.Title"
+                            data-song-artist="@song.ArtistName"
+                            onclick="player.playFrom(@song.SongId)"
+                            title="Oynat">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p class="text-muted">Henüz öneri yok — birkaç şarkı dinledikçe öneriler oluşacak.</p>
+}

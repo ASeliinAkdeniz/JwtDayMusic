@@ -1,0 +1,66 @@
+﻿@model JwtDayMusic.WebUI.Dtos.GenreDetailDto
+
+@{
+    ViewData["Title"] = Model?.Name ?? "Tür";
+
+    string TierName(int t) => t switch
+    {
+        1 => "Basic",
+        2 => "Gold",
+        3 => "Premium",
+        4 => "Elit",
+        _ => "Basic"
+    };
+    string TierColor(int t) => t switch
+    {
+        1 => "#6c757d",
+        2 => "#d4a017",
+        3 => "#8e44ad",
+        4 => "#c0392b",
+        _ => "#6c757d"
+    };
+}
+
+<a asp-action="Index" class="btn btn-link px-0 mb-2">← Tüm türler</a>
+
+<h2 class="mb-3">@Model.Name</h2>
+
+
+@if (Model.Songs == null || !Model.Songs.Any())
+{
+    <div class="alert alert-info">Bu türde şarkı bulunmuyor.</div>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var song in Model.Songs)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@song.Title</strong>
+                    <span class="text-muted" style="font-size:0.85rem;"> · @song.ArtistName</span>
+                    <span class="badge ms-2" style="background:@TierColor(song.Tier);">
+                        @TierName(song.Tier)
+                    </span>
+                </div>
+                <button class="btn btn-primary btn-sm queue-item"
+                        data-song-id="@song.SongId"
+                        data-song-title="@song.Title"
+                        data-song-artist="@song.ArtistName"
+                        onclick="player.playFrom(@song.SongId)">
+                    ▶ Oynat
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="addToPlaylist(@song.SongId)">
+                    ＋ Ekle
+                </button>
+                <button class="btn btn-link btn-sm like-btn text-muted p-0 ms-1"
+                        style="font-size:1.3rem; text-decoration:none;"
+                        data-song-id="@song.SongId"
+                        onclick="toggleLike(@song.SongId, this)">
+                    ♡
+                </button>
+            </div>
+        }
+    </div>
+}
+

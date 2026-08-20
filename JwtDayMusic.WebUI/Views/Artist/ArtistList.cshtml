@@ -1,0 +1,66 @@
+@model List<JwtDayMusic.WebUI.Dtos.ResultArtistDto>
+
+@{
+    ViewData["Title"] = "Sanatçılar";
+}
+
+<div class="al-bg-grid"></div>
+
+<div class="al-header">
+    <div>
+        <h2 class="al-heading">Öne Çıkan Sanatçılar</h2>
+        <p class="al-subheading">Retro ızgarada en iyi sanatçıları keşfet</p>
+    </div>
+    @if (Model.Any())
+    {
+        <div class="al-search">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="artistSearch" placeholder="Sanatçı ara..." oninput="filterArtists(this.value)" />
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henüz sanatçı bulunmuyor.</div>
+}
+else
+{
+    <div class="al-grid" id="artistGrid">
+        @foreach (var artist in Model)
+        {
+            <a asp-controller="Artist" asp-action="Detail" asp-route-id="@artist.ArtistId"
+               class="al-card" data-name="@artist.Name.ToLowerInvariant()">
+                <div class="al-avatar">
+                    <img src="@artist.ImageUrl" alt="@artist.Name" />
+                </div>
+                <div class="al-name">
+                    <span>@artist.Name</span>
+                    @if (artist.IsVerified)
+                    {
+                        <span class="material-symbols-outlined al-verified" style="font-variation-settings: 'FILL' 1;" title="Doğrulanmış">verified</span>
+                    }
+                </div>
+                <p class="al-listeners">@artist.MonthlyListeners.ToString("N0") Aylık Dinleyici</p>
+            </a>
+        }
+    </div>
+    <p class="al-empty" id="artistEmpty">Aramanla eşleşen sanatçı bulunamadı.</p>
+}
+
+@section Scripts {
+    <script>
+        function filterArtists(query) {
+            const q = query.trim().toLowerCase();
+            const cards = document.querySelectorAll('#artistGrid .al-card');
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const match = card.getAttribute('data-name').includes(q);
+                card.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+            const empty = document.getElementById('artistEmpty');
+            if (empty) empty.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    </script>
+}

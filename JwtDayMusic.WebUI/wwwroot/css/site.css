@@ -1,0 +1,63 @@
+﻿html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+/* Modern kalp (beğeni) butonu */
+.like-btn {
+    border: none;
+    background: rgba(255,71,156,0.08);
+    color: #e2bdc7;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .like-btn:hover {
+        background: rgba(255,71,156,0.18);
+        color: #ff479c;
+        transform: scale(1.15);
+    }
+    /* like.js beğenilince .text-danger ekliyor → neon parlaması */
+    .like-btn.text-danger {
+        color: #ff2e97 !important;
+        background: rgba(255,46,151,0.15);
+        box-shadow: 0 0 12px rgba(255,46,151,0.6);
+    }
+
+    .like-btn.text-muted {
+        color: #e2bdc7 !important;
+    }
+/* Müzik kartı kapaklarını eşitle */
+.card img,
+.song-card img,
+.card-img-top {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* kare kutu */
+    height: auto;
+    object-fit: cover; /* taşan kısmı kırp, oranı koru */
+    object-position: center;
+    display: block;
+    background: #1d2026; /* resim yüklenene kadar arka plan */
+}

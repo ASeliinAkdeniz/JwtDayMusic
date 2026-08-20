@@ -1,0 +1,53 @@
+@model JwtDayMusic.WebUI.Dtos.UpdateProfileDto
+
+@{
+    ViewData["Title"] = "Profili Düzenle";
+}
+
+<div class="pr-edit-wrap">
+    <div class="pr-edit-card">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+            @Html.HiddenFor(m => m.CurrentImageUrl)
+
+            <div class="pr-edit-header">
+                <div class="pr-edit-avatar-preview">
+                    @if (!string.IsNullOrEmpty(Model.CurrentImageUrl))
+                    {
+                        <img src="@Model.CurrentImageUrl" alt="Mevcut resim" />
+                    }
+                    else
+                    {
+                        <div class="pr-avatar-fallback">?</div>
+                    }
+                </div>
+                <h1 class="pr-edit-title">Profili Düzenle</h1>
+                <p class="pr-edit-subtitle">Bilgilerini ve profil resmini güncelle.</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="pr-form-label">Ad</label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="pr-form-label">Soyad</label>
+                <input asp-for="Surname" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="pr-form-label">Profil Resmi (opsiyonel)</label>
+                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                <div class="form-text">Yeni resim seçmezsen mevcut resmin korunur.</div>
+            </div>
+
+            <div class="pr-edit-actions">
+                <button type="submit" class="pr-btn-edit">
+                    <span class="material-symbols-outlined">save</span>
+                    Kaydet
+                </button>
+                <a asp-action="Index" class="pr-btn-share">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>

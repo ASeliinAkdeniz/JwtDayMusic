@@ -1,0 +1,106 @@
+@model JwtDayMusic.WebUI.Dtos.PlaylistDetailDto
+
+@{
+    ViewData["Title"] = Model?.Name ?? "Playlist";
+
+    string TierName(int t) => t switch
+    {
+        1 => "Basic",
+        2 => "Gold",
+        3 => "Premium",
+        4 => "Elit",
+        _ => "Basic"
+    };
+}
+
+<a asp-action="Index" class="ad-back-link">
+    <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+    Tüm playlistler
+</a>
+
+<div class="fv-header">
+    <div>
+        <h1 class="fv-title">@Model.Name</h1>
+        <p class="fv-subtitle">@(Model.Songs?.Count ?? 0) şarkı</p>
+    </div>
+    @if (Model.Songs != null && Model.Songs.Any())
+    {
+        <div class="fv-actions">
+            <button type="button" class="fv-btn-playall" onclick="playAllOnPage()">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                Tümünü Çal
+            </button>
+            <button type="button" class="fv-btn-shuffle" id="shuffleBtn" onclick="toggleShuffleBtn(this)" title="Karışık çal">
+                <span class="material-symbols-outlined">shuffle</span>
+            </button>
+        </div>
+    }
+</div>
+
+@if (Model.Songs == null || !Model.Songs.Any())
+{
+    <div class="alert alert-info">Bu playlist boş. Müzikler sayfasından şarkı ekleyebilirsin.</div>
+}
+else
+{
+    <div class="fv-list">
+        @foreach (var song in Model.Songs)
+        {
+            <div class="fv-row" id="song-row-@song.SongId">
+                <div class="fv-row-main">
+                    <div class="fv-cover">
+                        <img src="@song.CoverImageUrl" alt="@song.Title" />
+                        <div class="fv-cover-overlay queue-item"
+                             data-song-id="@song.SongId"
+                             data-song-title="@song.Title"
+                             data-song-artist="@song.ArtistName"
+                             onclick="player.playFrom(@song.SongId)">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                        </div>
+                    </div>
+                    <div class="fv-row-info">
+                        <span class="fv-row-title">@song.Title</span>
+                        <span class="fv-row-artist">@song.ArtistName</span>
+                    </div>
+                </div>
+                <div class="fv-row-meta">
+                    <span class="fv-duration">@song.Duration.ToString(@"m\:ss")</span>
+                    <span class="fv-badge fv-badge--@song.Tier">@TierName(song.Tier)</span>
+                    <button class="fv-icon-btn fv-remove" onclick="removeSong(@Model.PlaylistId, @song.SongId)" title="Playlistten çıkar">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function playAllOnPage() {
+            const first = document.querySelector('.queue-item');
+            if (first) player.playFrom(parseInt(first.getAttribute('data-song-id'), 10));
+        }
+        function toggleShuffleBtn(btn) {
+            player.toggleShuffle();
+            btn.classList.toggle('active', player.shuffle);
+        }
+
+        async function removeSong(playlistId, songId) {
+            if (!confirm('Şarkı playlistten çıkarılsın mı?')) return;
+            try {
+                const res = await fetch('/Playlist/RemoveSong?playlistId=' + playlistId + '&songId=' + songId,
+                    { method: 'POST' });
+                if (res.ok) {
+                    const row = document.getElementById('song-row-' + songId);
+                    if (row) row.remove();
+                    notify('Şarkı playlistten çıkarıldı.', 'success', 2000);
+                } else {
+                    notify('Şarkı çıkarılamadı.', 'error');
+                }
+            } catch (e) {
+                notify('İstek gönderilemedi: ' + e, 'error');
+            }
+        }
+    </script>
+}

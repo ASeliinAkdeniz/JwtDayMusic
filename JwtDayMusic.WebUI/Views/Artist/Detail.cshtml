@@ -1,0 +1,113 @@
+@model JwtDayMusic.WebUI.Dtos.ArtistDetailDto
+
+@{
+    ViewData["Title"] = Model?.Name ?? "Sanatçı";
+
+    string TierName(int t) => t switch
+    {
+        1 => "Basic",
+        2 => "Gold",
+        3 => "Premium",
+        4 => "Elit",
+        _ => "Basic"
+    };
+
+    var songs = Model?.Songs != null
+        ? Model.Songs.OrderByDescending(s => s.PlayCount).ToList()
+        : new List<JwtDayMusic.WebUI.Dtos.ResultSongDto>();
+}
+
+<a asp-action="ArtistList" class="ad-back-link">
+    <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+    Tüm sanatçılar
+</a>
+
+<header class="ad-hero">
+    <div class="ad-avatar-wrap">
+        <img src="@Model.ImageUrl" alt="@Model.Name" />
+    </div>
+    <div>
+        <h1 class="ad-name">
+            @Model.Name
+            @if (Model.IsVerified)
+            {
+                <span class="material-symbols-outlined ad-verified" style="font-variation-settings: 'FILL' 1;" title="Doğrulanmış sanatçı">verified</span>
+            }
+        </h1>
+        <p class="ad-listeners">@Model.MonthlyListeners.ToString("N0") aylık dinleyici</p>
+        <p class="ad-bio">@Model.Bio</p>
+
+        <div class="ad-actions">
+            @if (songs.Any())
+            {
+                <button class="ad-btn-play queue-item"
+                        data-song-id="@songs.First().SongId"
+                        data-song-title="@songs.First().Title"
+                        data-song-artist="@songs.First().ArtistName"
+                        onclick="player.playFrom(@songs.First().SongId)">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    Tümünü Çal
+                </button>
+            }
+            else
+            {
+                <button class="ad-btn-play" disabled>
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    Tümünü Çal
+                </button>
+            }
+            <button class="ad-btn-follow" disabled title="Takip özelliği yakında">
+                <span class="material-symbols-outlined">person_add</span>
+                Takip Et
+            </button>
+        </div>
+    </div>
+</header>
+
+<section class="ad-panel">
+    <h2 class="ad-panel-title">Popüler Parçalar</h2>
+
+    @if (!songs.Any())
+    {
+        <div class="alert alert-info">Bu sanatçının şarkısı bulunmuyor.</div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-2">
+            @{ int rank = 1; }
+            @foreach (var song in songs)
+            {
+                <div class="ad-track-row">
+                    <span class="ad-track-rank">@rank</span>
+                    <button class="ad-track-play queue-item"
+                            data-song-id="@song.SongId"
+                            data-song-title="@song.Title"
+                            data-song-artist="@song.ArtistName"
+                            onclick="player.playFrom(@song.SongId)"
+                            title="Oynat">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size:20px;">play_arrow</span>
+                    </button>
+                    <div class="ad-track-cover">
+                        <img src="@song.CoverImageUrl" alt="@song.Title" />
+                    </div>
+                    <div class="ad-track-info">
+                        <div class="ad-track-title">@song.Title</div>
+                        @if (!string.IsNullOrWhiteSpace(song.GenreName))
+                        {
+                            <span class="ad-track-tag">#@song.GenreName.ToUpperInvariant()</span>
+                        }
+                    </div>
+                    <span class="ad-track-badge ad-track-badge--@song.Tier">@TierName(song.Tier)</span>
+                    <div class="ad-track-actions">
+                        <button class="ad-icon-btn like-btn text-muted" data-song-id="@song.SongId"
+                                onclick="toggleLike(@song.SongId, this)" title="Beğen">♡</button>
+                        <button class="ad-icon-btn" onclick="addToPlaylist(@song.SongId)" title="Playlist'e ekle">
+                            <span class="material-symbols-outlined">add_circle</span>
+                        </button>
+                    </div>
+                </div>
+                rank++;
+            }
+        </div>
+    }
+</section>
